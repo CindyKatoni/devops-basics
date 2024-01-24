@@ -44,8 +44,8 @@
 
 <body>
     <div>
-        <h1>We are now testing to see if our CD/CD works. </h1>
-        <p>Click <a href="#">click here</a> theitern.com!</p>
+        <h1>This is the final test that our CI/CD is working! </h1>
+        <p>Click <a href="#">click here for end to end deployment</a> theitern.com!</p>
     </div>
 </body>
 
