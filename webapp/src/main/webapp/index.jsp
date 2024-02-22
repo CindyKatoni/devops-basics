@@ -1,111 +1,57 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colorful Page</title>
+    <title>Your Awesome Website</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to right, #ff9966, #ff5e62);
-            color: white;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #f4f4f4;
+            color: #333;
         }
 
-        h1 {
-            font-size: 3rem;
-            border-bottom: 5px solid #ffffff66;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 1em;
+            text-align: center;
         }
 
-        p {
-            font-size: 1.2rem;
+        section {
+            max-width: 800px;
+            margin: 2em auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        a {
-            color: white;
-            text-decoration: none;
-            border-bottom: 2px solid white;
-        }
-
-        a:hover {
-            background-color: #ffffff44;
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 1em;
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
-    <div>
-        <h1>A demo that the CD/CD pipeline is working</h1>
-        <p>For additional info, click <a href="#">click here</a> theitern.com!</p>
-    </div>
+    <header>
+        <h1>Your Awesome Website</h1>
+    </header>
+
+    <section>
+        <h2>Welcome to our website!</h2>
+        <p>This is a sample website. Customize it to make it truly yours.</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Your Awesome Website. All rights reserved.</p>
+    </footer>
 </body>
 
 </html>
-
-
-=======
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colorful Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to right, #ff9966, #ff5e62);
-            color: white;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        h1 {
-            font-size: 3rem;
-            border-bottom: 5px solid #ffffff66;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 1.2rem;
-        }
-
-        a {
-            color: white;
-            text-decoration: none;
-            border-bottom: 2px solid white;
-        }
-
-        a:hover {
-            background-color: #ffffff44;
-        }
-    </style>
-</head>
-
-<body>
-    <div>
-        <h1>ANOTHER final test that our CI/CD is working! </h1>
-        <p>Click <a href="#">click here for end to end deployment</a> theitern.com!</p>
-    </div>
-</body>
-
-</html>
-
-
->>>>>>> refs/remotes/origin/master
