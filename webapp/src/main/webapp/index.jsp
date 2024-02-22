@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to theItern App Homepage</title>
+    <title>This is theItern App Homepage</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
