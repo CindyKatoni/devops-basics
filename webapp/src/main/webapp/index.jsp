@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>This is theItern App Homepage</title>
+    <title>theITern App</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -41,12 +41,12 @@
 
 <body>
     <header>
-        <h1>Your Awesome Website</h1>
+        <h1>This is the Header!</h1>
     </header>
 
     <section>
-        <h2>Welcome to our website!</h2>
-        <p>This is a sample website. Customize it to make it truly yours.</p>
+        <h2>Welcome to the Homepage of theITern App</h2>
+        <p>This is a sample Web App written in Java. Customize it to make it truly yours.</p>
     </section>
 
     <footer>
