@@ -45,7 +45,7 @@
     </header>
 
     <section>
-        <h2>Welcome to the Homepage of theITern App</h2>
+        <h2>Yes, this is the end to end CICD project</h2>
         <p>This is a sample Web App written in Java. Customize it to make it truly yours.</p>
     </section>
 
