@@ -40,7 +40,7 @@ pipeline {
             }
         }
 
-        stage('Clear Docker Server') {
+        /*stage('Clear Docker Server') {
             steps {
                 echo 'Clearing Docker Server..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
@@ -50,7 +50,7 @@ pipeline {
                     """
                 }
             }
-        }
+        }*/
 
         stage('Copy WAR to Docker Server') {
             steps {
