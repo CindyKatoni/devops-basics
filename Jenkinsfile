@@ -40,17 +40,20 @@ pipeline {
             }
         }
 
-        /*stage('Clear Docker Server') {
+        stage('Clear Docker Server') {
             steps {
                 echo 'Clearing Docker Server..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
-                    sh """
-                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f \$(docker ps -aq)'
-                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'yes | docker system prune --all'
-                    """
+                    script {
+                        // Remove all running containers
+                        sh "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f \$(docker ps -aq)'"
+
+                        // Automatically confirm "yes" for Docker system prune
+                        sh "yes | ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker system prune --all'"
+                    }
                 }
             }
-        }*/
+        }
 
         stage('Copy WAR to Docker Server') {
             steps {
