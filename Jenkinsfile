@@ -11,7 +11,7 @@ pipeline {
         DOCKER_HUB_REPO = 'akinaregbesola/private'
         DOCKER_HUB_CREDENTIALS = 'dockerhub-credentials-id'
         IMAGE_TAG = 'latest'
-        SSH_CREDENTIALS_ID = 'ssh-credentials-id'
+        SSH_CREDENTIALS_ID = 'SSH_CREDENTIALS_ID'
     }
 
     stages {
@@ -40,7 +40,7 @@ pipeline {
             }
         }
 
-        /*stage('Clear Docker Server') {
+        stage('Clear Docker Server') {
             steps {
                 echo 'Clearing Docker Server..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
@@ -50,7 +50,7 @@ pipeline {
                     """
                 }
             }
-        }*/
+        }
 
         stage('Copy WAR to Docker Server') {
             steps {
