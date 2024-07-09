@@ -20,7 +20,7 @@ pipeline {
                 echo 'Cloning..'
                 withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        git credentialsId: 'theitern', url: "https://github.com/theitern/devops-basics.git"
+                        git credentialsId: 'theitern', url: "https://github.com/theitern/DevopsBasics.git"
                     }
                 }
             }
@@ -40,7 +40,7 @@ pipeline {
             }
         }
 
-        stage('Clear Docker Server') {
+        /*stage('Clear Docker Server') {
             steps {
                 echo 'Clearing Docker Server..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
@@ -50,7 +50,7 @@ pipeline {
                     """
                 }
             }
-        }
+        }*/
 
         stage('Copy WAR to Docker Server') {
             steps {
