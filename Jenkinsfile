@@ -78,7 +78,7 @@ pipeline {
                 echo 'Building Docker Image..'
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /home/ubuntu && ls -la && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /home && ls -la && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
                     """
                 }
             }
