@@ -44,13 +44,25 @@ pipeline {
             steps {
                 echo 'Clearing Docker Server..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f \$(docker ps -aq)'
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'yes | docker system prune --all'
-                    """
+                    script {
+                        // Check if there are containers to remove
+                        def containerIds = sh(
+                            script: "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker ps -aq'",
+                            returnStdout: true
+                        ).trim()
+                        
+                        if (containerIds) {
+                            sh "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f ${containerIds}'"
+                        } else {
+                            echo "No containers to remove."
+                        }
+                        
+                        sh "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'yes | docker system prune --all'"
+                    }
                 }
             }
         }
+
 
         stage('Copy WAR to Docker Server') {
             steps {
