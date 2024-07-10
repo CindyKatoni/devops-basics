@@ -8,6 +8,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = 'dockerhub_credentials_id'
         IMAGE_TAG = 'latest'
         SSH_CREDENTIALS_ID = 'ssh-credentials-id'
+        REPO_URL = 'https://github.com/theitern/devops-basics.git'
     }
 
     tools {
@@ -21,10 +22,10 @@ pipeline {
                 echo 'Cloning repository..'
                 withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        // Remove existing repository clone
+                        // Remove existing repository clone if present
                         sh "rm -rf /var/lib/jenkins/workspace/cicd-pipeline/devops-basics"
-                        // Clone repository to /home/ubuntu
-                        git credentialsId: 'theitern', url: "https://github.com/theitern/devops-basics.git", branch: 'master', directory: '/var/lib/jenkins/workspace/cicd-pipeline/devops-basics'
+                        // Clone repository to /home/ubuntu/devops-basics
+                        git credentialsId: 'theitern', url: env.REPO_URL, branch: 'master', dir: '/var/lib/jenkins/workspace/cicd-pipeline/devops-basics'
                     }
                 }
             }
@@ -83,7 +84,7 @@ pipeline {
                 echo 'Building Docker Image..'
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /home/ubuntu/devops-basics && ls -la && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /var/lib/jenkins/workspace/cicd-pipeline/devops-basics && ls -la && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
                     """
                 }
             }
