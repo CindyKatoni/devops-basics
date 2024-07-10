@@ -1,8 +1,4 @@
 pipeline {
-    tools {
-        jdk 'myjava'
-        maven 'mymaven'
-    }
     agent any
 
     environment {
@@ -14,14 +10,17 @@ pipeline {
         SSH_CREDENTIALS_ID = 'ssh-credentials-id'
     }
 
+    tools {
+        jdk 'myjava'
+        maven 'mymaven'
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 echo 'Cloning..'
                 withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    script {
-                        git credentialsId: 'theitern', url: "https://github.com/theitern/devops-basics.git"
-                    }
+                    git credentialsId: 'theitern', url: "https://github.com/theitern/devops-basics.git"
                 }
             }
         }
@@ -43,9 +42,8 @@ pipeline {
         stage('Clear Docker Server') {
             steps {
                 echo 'Clearing Docker Server..'
-                sshagent([env.SSH_CREDENTIALS_ID]) {
-                    script {
-                        // Check if there are containers to remove
+                script {
+                    sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                         def containerIds = sh(
                             script: "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker ps -aq'",
                             returnStdout: true
@@ -63,11 +61,10 @@ pipeline {
             }
         }
 
-
         stage('Copy WAR to Docker Server') {
             steps {
                 echo 'Copying WAR to Docker Server..'
-                sshagent([env.SSH_CREDENTIALS_ID]) {
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'rm -f /home/ubuntu/webapp.war'
                         scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/${env.JOB_NAME}/webapp/target/webapp.war ${env.DOCKER_USER}@${env.DOCKER_SERVER}:/home/ubuntu/
@@ -79,16 +76,13 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker Image..'
-                sshagent([env.SSH_CREDENTIALS_ID]) {
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /var/lib/jenkins/workspace/cicd-pipeline && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /home/ubuntu && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
                     """
                 }
             }
         }
-
-
-
 
         stage('Push Docker Image') {
             steps {
@@ -105,7 +99,7 @@ pipeline {
         stage('Run Docker Image') {
             steps {
                 echo 'Running Docker Image..'
-                sshagent([env.SSH_CREDENTIALS_ID]) {
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'sudo docker run -d --name our_app_container -p 8080:8080 ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}'
                     """
