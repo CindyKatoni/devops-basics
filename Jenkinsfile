@@ -45,8 +45,8 @@ pipeline {
                 echo 'Clearing Docker Server..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f \$(docker ps -aq)'
-                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'yes | docker system prune --all'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f \$(docker ps -aq)'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'yes | docker system prune --all'
                     """
                 }
             }
@@ -57,8 +57,8 @@ pipeline {
                 echo 'Copying WAR to Docker Server..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'rm -f /home/ubuntu/webapp.war'
-                        scp /var/lib/jenkins/workspace/${env.JOB_NAME}/webapp/target/webapp.war ${env.DOCKER_USER}@${env.DOCKER_SERVER}:/home/ubuntu/
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'rm -f /home/ubuntu/webapp.war'
+                        scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/${env.JOB_NAME}/webapp/target/webapp.war ${env.DOCKER_USER}@${env.DOCKER_SERVER}:/home/ubuntu/
                     """
                 }
             }
@@ -69,7 +69,7 @@ pipeline {
                 echo 'Building Docker Image..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /home/ubuntu && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /home/ubuntu && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
                     """
                 }
             }
@@ -80,8 +80,8 @@ pipeline {
                 echo 'Pushing Docker Image..'
                 withCredentials([usernamePassword(credentialsId: env.DOCKER_HUB_CREDENTIALS, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh """
-                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
-                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker push ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker push ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}'
                     """
                 }
             }
@@ -92,7 +92,7 @@ pipeline {
                 echo 'Running Docker Image..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'sudo docker run -d --name our_app_container -p 8080:8080 ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'sudo docker run -d --name our_app_container -p 8080:8080 ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}'
                     """
                 }
             }
@@ -108,4 +108,3 @@ pipeline {
         }
     }
 }
-
