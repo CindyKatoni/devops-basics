@@ -6,12 +6,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_SERVER = '18.234.62.234'
+        DOCKER_SERVER = '54.165.158.86'
         DOCKER_USER = 'ubuntu'
-        DOCKER_HUB_REPO = 'akinaregbesola/private'
-        DOCKER_HUB_CREDENTIALS = 'dockerhub-credentials-id'
+        DOCKER_HUB_REPO = 'akinaregbesola/class_images'
+        DOCKER_HUB_CREDENTIALS = 'dockerhub_credentials_id'
         IMAGE_TAG = 'latest'
-        SSH_CREDENTIALS_ID = 'SSH_CREDENTIALS_ID'
+        SSH_CREDENTIALS_ID = 'ssh-credentials-id'
     }
 
     stages {
@@ -20,7 +20,7 @@ pipeline {
                 echo 'Cloning..'
                 withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        git credentialsId: 'theitern', url: "https://github.com/theitern/DevopsBasics.git"
+                        git credentialsId: 'theitern', url: "https://github.com/theitern/devops-basics.git"
                     }
                 }
             }
@@ -44,13 +44,10 @@ pipeline {
             steps {
                 echo 'Clearing Docker Server..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
-                    script {
-                        // Remove all running containers
-                        sh "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f \$(docker ps -aq)'"
-
-                        // Automatically confirm "yes" for Docker system prune
-                        sh "yes | ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker system prune --all'"
-                    }
+                    sh """
+                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f \$(docker ps -aq)'
+                        ssh ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'yes | docker system prune --all'
+                    """
                 }
             }
         }
@@ -111,3 +108,4 @@ pipeline {
         }
     }
 }
+
