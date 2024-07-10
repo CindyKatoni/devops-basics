@@ -81,11 +81,12 @@ pipeline {
                 echo 'Building Docker Image..'
                 sshagent([env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /home/ubuntu && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /var/lib/jenkins/workspace/cicd-pipeline/devops-basics && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
                     """
                 }
             }
         }
+
 
         stage('Push Docker Image') {
             steps {
