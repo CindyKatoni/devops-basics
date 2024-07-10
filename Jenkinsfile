@@ -18,9 +18,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Cloning..'
+                echo 'Cloning repository..'
                 withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    git credentialsId: 'theitern', url: "https://github.com/theitern/devops-basics.git"
+                    script {
+                        // Remove existing repository clone
+                        sh "rm -rf /var/lib/jenkins/workspace/cicd-pipeline/devops-basics"
+                        // Clone repository to /home/ubuntu
+                        git credentialsId: 'theitern', url: "https://github.com/theitern/devops-basics.git", branch: 'master', directory: '/var/lib/jenkins/workspace/cicd-pipeline/devops-basics'
+                    }
                 }
             }
         }
@@ -78,7 +83,7 @@ pipeline {
                 echo 'Building Docker Image..'
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /home && ls -la && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /home/ubuntu/devops-basics && ls -la && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
                     """
                 }
             }
