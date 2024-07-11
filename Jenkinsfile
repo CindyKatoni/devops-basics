@@ -84,7 +84,7 @@ pipeline {
                 echo 'Building Docker Image..'
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'sudo -u jenkins docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} -f /var/lib/jenkins/workspace/cicd-pipeline/webapp/target/Dockerfile .'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'cd /var/lib/jenkins/workspace/cicd-pipeline/webapp/target && ls -la && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
                     """
                 }
             }
@@ -107,7 +107,7 @@ pipeline {
                 echo 'Running Docker Image..'
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'sudo -u jenkins docker run -d --name our_app_container -p 8080:8080 ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'sudo docker run -d --name our_app_container -p 8080:8080 ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}'
                     """
                 }
             }
@@ -123,3 +123,4 @@ pipeline {
         }
     }
 }
+
