@@ -17,17 +17,15 @@ pipeline {
     }
 
     stages {
-        stage('Check Repository') {
+        stage('Clone Repository') {
             steps {
-                script {
-                    def repoDir = '/var/lib/jenkins/workspace/cicd-pipeline/devops-basics'
-                    if (!fileExists(repoDir)) {
-                        echo 'Repository not found. Cloning...'
-                        withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                            sh "git clone ${env.REPO_URL} ${repoDir}"
-                        }
-                    } else {
-                        echo 'Repository already exists.'
+                echo 'Cloning repository..'
+                withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    script {
+                        // Remove existing repository clone if present
+                        sh "rm -rf /var/lib/jenkins/workspace/cicd-pipeline/devops-basics"
+                        // Clone repository to /var/lib/jenkins/workspace/cicd-pipeline/devops-basics
+                        git credentialsId: 'theitern', url: env.REPO_URL, branch: 'master', dir: '/var/lib/jenkins/workspace/cicd-pipeline/devops-basics'
                     }
                 }
             }
@@ -44,6 +42,40 @@ pipeline {
             steps {
                 echo 'Packaging..'
                 sh 'mvn package'
+            }
+        }
+
+        stage('Clear Docker Server') {
+            steps {
+                echo 'Clearing Docker Server..'
+                script {
+                    sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
+                        def containerIds = sh(
+                            script: "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker ps -aq'",
+                            returnStdout: true
+                        ).trim()
+                        
+                        if (containerIds) {
+                            sh "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f ${containerIds}'"
+                        } else {
+                            echo "No containers to remove."
+                        }
+                        
+                        sh "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'yes | docker system prune --all'"
+                    }
+                }
+            }
+        }
+
+        stage('Copy WAR to Docker Server') {
+            steps {
+                echo 'Copying WAR to Docker Server..'
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'rm -f /home/ubuntu/webapp.war'
+                        scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/${env.JOB_NAME}/webapp/target/webapp.war ${env.DOCKER_USER}@${env.DOCKER_SERVER}:/home/ubuntu/
+                    """
+                }
             }
         }
 
@@ -90,8 +122,4 @@ pipeline {
             echo 'Pipeline failed!'
         }
     }
-}
-
-def fileExists(filePath) {
-    return file(filePath).exists()
 }
