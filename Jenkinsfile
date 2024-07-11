@@ -17,15 +17,17 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Check Repository') {
             steps {
-                echo 'Cloning repository..'
-                withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    script {
-                        // Remove existing repository clone if present
-                        sh "rm -rf /var/lib/jenkins/workspace/cicd-pipeline/devops-basics"
-                        // Clone repository to /var/lib/jenkins/workspace/cicd-pipeline/devops-basics
-                        git credentialsId: 'theitern', url: env.REPO_URL, branch: 'master', dir: '/var/lib/jenkins/workspace/cicd-pipeline/devops-basics'
+                script {
+                    def repoDir = '/var/lib/jenkins/workspace/cicd-pipeline/devops-basics'
+                    if (!fileExists(repoDir)) {
+                        echo 'Repository not found. Cloning...'
+                        withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            sh "git clone ${env.REPO_URL} ${repoDir}"
+                        }
+                    } else {
+                        echo 'Repository already exists.'
                     }
                 }
             }
@@ -42,20 +44,6 @@ pipeline {
             steps {
                 echo 'Packaging..'
                 sh 'mvn package'
-            }
-        }
-
-        stage('Clone Repository Again') {
-            steps {
-                echo 'Cloning repository again..'
-                withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    script {
-                        // Remove existing repository clone if present
-                        sh "rm -rf /var/lib/jenkins/workspace/cicd-pipeline/devops-basics"
-                        // Clone repository to /var/lib/jenkins/workspace/cicd-pipeline/devops-basics
-                        git credentialsId: 'theitern', url: env.REPO_URL, branch: 'master', dir: '/var/lib/jenkins/workspace/cicd-pipeline/devops-basics'
-                    }
-                }
             }
         }
 
@@ -102,4 +90,8 @@ pipeline {
             echo 'Pipeline failed!'
         }
     }
+}
+
+def fileExists(filePath) {
+    return file(filePath).exists()
 }
