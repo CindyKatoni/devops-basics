@@ -90,7 +90,6 @@ pipeline {
                 }
             }
         }
- /* 
         stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker Image..'
@@ -112,7 +111,7 @@ pipeline {
                     """
                 }
             }
-        } */
+        } 
     }
 
     post {
