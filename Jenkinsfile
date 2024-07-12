@@ -85,7 +85,7 @@ pipeline {
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
                         scp -o StrictHostKeyChecking=no -r ${env.WORKSPACE}/* ${env.DOCKER_USER}@${env.DOCKER_SERVER}:/home/ubuntu
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'ls -la && ls -la /var/lib/jenkins '
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'ls -la && docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
                     """
                 }
             }
