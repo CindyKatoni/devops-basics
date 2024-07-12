@@ -84,12 +84,12 @@ pipeline {
                 echo 'Building Docker Image..'
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'ls  && cd /var/lib/jenkins/workspace/cicd-pipeline/webapp/target && ls -la && sudo docker build -t ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG} .'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'ls && ls -la /var/lib/jenkins/workspace/cicd-pipeline/webapp/target'
                     """
                 }
             }
         }
-
+ /* 
         stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker Image..'
@@ -102,7 +102,7 @@ pipeline {
             }
         }
 
-        stage('Run Docker Image') {
+      stage('Run Docker Image') {
             steps {
                 echo 'Running Docker Image..'
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
@@ -111,7 +111,7 @@ pipeline {
                     """
                 }
             }
-        }
+        } */
     }
 
     post {
