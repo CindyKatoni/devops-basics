@@ -93,6 +93,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker Image..'
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]){
                 withCredentials([usernamePassword(credentialsId: env.DOCKER_HUB_CREDENTIALS, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'echo ${DOCKER_PASSWORD} | docker login -u $DOCKER_USERNAME --password-stdin'
@@ -100,6 +101,7 @@ pipeline {
                     """
                 }
             }
+        }
         }
 
       stage('Run Docker Image') {
