@@ -50,7 +50,7 @@
     </section>
 
     <footer>
-        <p>&copy; 2024 Your Awesome Website. All rights reserved.</p>
+        <p>&copy; 2024 theITern Website. All rights reserved.</p>
     </footer>
 </body>
 
