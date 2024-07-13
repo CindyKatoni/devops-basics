@@ -41,11 +41,11 @@
 
 <body>
     <header>
-        <h1>This is the Header!</h1>
+        <h1>welcome to theITern!</h1>
     </header>
 
     <section>
-        <h2>CAN YOU SEE THIS? Yes or No. <h2>
+        <h2>CICD deployment - Ansible </h2>
         <p>This is a sample Web App written in Java. Customize it to make it truly yours.</p>
     </section>
 
