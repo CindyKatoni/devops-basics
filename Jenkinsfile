@@ -1,5 +1,3 @@
-Run this script on devops-basics PRIVATE repository
-https://github.com/theitern/devops-basics.git 
 pipeline {
     tools {
         jdk 'myjava'
@@ -42,3 +40,5 @@ pipeline {
         }
     }
 }
+
+
