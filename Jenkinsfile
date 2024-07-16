@@ -20,9 +20,9 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'theitern', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
                         // Remove existing repository clone if present
-                        sh "rm -rf /var/lib/jenkins/workspace/cicd-pipeline/devops-basics"
-                        // Clone repository to /var/lib/jenkins/workspace/cicd-pipeline/devops-basics
-                        git credentialsId: 'theitern', url: env.REPO_URL, branch: 'master', dir: '/var/lib/jenkins/workspace/cicd-pipeline/devops-basics'
+                        sh 'rm -rf ${WORKSPACE}/devops-basics'
+                        // Clone repository to ${WORKSPACE}/devops-basics
+                        git credentialsId: 'theitern', url: env.REPO_URL, branch: 'master', dir: "${WORKSPACE}/devops-basics"
                     }
                 }
             }
@@ -30,15 +30,19 @@ pipeline {
 
         stage('Compile') {
             steps {
-                echo 'Compiling..'
-                sh 'mvn compile'
+                dir("${WORKSPACE}/devops-basics") {
+                    echo 'Compiling..'
+                    sh 'mvn compile'
+                }
             }
         }
 
         stage('Package') {
             steps {
-                echo 'Packaging..'
-                sh 'mvn package'
+                dir("${WORKSPACE}/devops-basics") {
+                    echo 'Packaging..'
+                    sh 'mvn package'
+                }
             }
         }
 
@@ -48,7 +52,7 @@ pipeline {
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.ANSIBLE_USER}@${env.ANSIBLE_SERVER} 'rm -f /home/ubuntu/webapp.war'
-                        scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/${env.JOB_NAME}/webapp/target/webapp.war ${env.ANSIBLE_USER}@${env.ANSIBLE_SERVER}:/home/ubuntu/
+                        scp -o StrictHostKeyChecking=no ${WORKSPACE}/devops-basics/target/webapp.war ${env.ANSIBLE_USER}@${env.ANSIBLE_SERVER}:/home/ubuntu/
                     """
                 }
             }
@@ -59,8 +63,8 @@ pipeline {
                 echo 'Deploying with Ansible..'
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                        scp -o StrictHostKeyChecking=no -r ${env.WORKSPACE}/* ${env.ANSIBLE_USER}@${env.ANSIBLE_SERVER}:/home/ubuntu
-                        ssh -o StrictHostKeyChecking=no ${env.ANSIBLE_USER}@${env.ANSIBLE_SERVER} 'ansible-playbook -i hosts playbook.yaml'
+                        scp -o StrictHostKeyChecking=no -r ${WORKSPACE}/devops-basics/* ${env.ANSIBLE_USER}@${env.ANSIBLE_SERVER}:/home/ubuntu
+                        ssh -o StrictHostKeyChecking=no ${env.ANSIBLE_USER}@${env.ANSIBLE_SERVER} 'ansible-playbook -i /home/ubuntu/hosts /home/ubuntu/playbook.yaml'
                     """
                 }
             }
