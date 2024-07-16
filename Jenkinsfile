@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        ANSIBLE_SERVER = ' 54.160.200.205'
+        ANSIBLE_SERVER = '54.160.200.205'
         ANSIBLE_USER = 'ubuntu'
         SSH_CREDENTIALS_ID = 'ssh-credentials-id'
         REPO_URL = 'https://github.com/theitern/devops-basics.git'
@@ -76,5 +76,3 @@ pipeline {
         }
     }
 }
-
-
