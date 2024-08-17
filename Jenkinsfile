@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_SERVER = '54.89.34.56'
+        DOCKER_SERVER = '34.227.24.27'
         DOCKER_USER = 'ubuntu'
         DOCKER_HUB_REPO = 'akinaregbesola/class_images'
         DOCKER_HUB_CREDENTIALS = 'dockerhub_credentials_id'
@@ -56,13 +56,11 @@ pipeline {
                         ).trim()
                         
                         if (containerIds) {
-                            echo "Removing containers: ${containerIds}"
                             sh "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker rm -f ${containerIds}'"
                         } else {
                             echo "No containers to remove."
                         }
                         
-                        echo "Pruning Docker system..."
                         sh "ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'yes | docker system prune --all'"
                     }
                 }
@@ -92,22 +90,21 @@ pipeline {
                 }
             }
         }
-
         stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker Image..'
-                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
-                    withCredentials([usernamePassword(credentialsId: env.DOCKER_HUB_CREDENTIALS, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh """
-                            ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'echo ${DOCKER_PASSWORD} | docker login -u $DOCKER_USERNAME --password-stdin'
-                            ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker push ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}'
-                        """
-                    }
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]){
+                withCredentials([usernamePassword(credentialsId: env.DOCKER_HUB_CREDENTIALS, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'echo ${DOCKER_PASSWORD} | docker login -u $DOCKER_USERNAME --password-stdin'
+                        ssh -o StrictHostKeyChecking=no ${env.DOCKER_USER}@${env.DOCKER_SERVER} 'docker push ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}'
+                    """
                 }
             }
         }
+        }
 
-        stage('Run Docker Image') {
+      stage('Run Docker Image') {
             steps {
                 echo 'Running Docker Image..'
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
@@ -128,3 +125,4 @@ pipeline {
         }
     }
 }
+
