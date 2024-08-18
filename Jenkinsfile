@@ -6,7 +6,7 @@ pipeline {
         DOCKER_USER = 'ubuntu'
         DOCKER_HUB_REPO = 'akinaregbesola/class_images'
         DOCKER_HUB_CREDENTIALS = 'dockerhub_credentials_id'
-        IMAGE_TAG = 'latest'
+        IMAGE_TAG = '1.5'
         SSH_CREDENTIALS_ID = 'SSH_CREDENTIALS_ID'
         REPO_URL = 'https://github.com/theitern/devops-basics.git'
     }
