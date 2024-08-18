@@ -45,7 +45,7 @@ pipeline {
         stage('Copy WAR to Ansible Server') {
             steps {
                 echo 'Copying WAR to Ansible Server..'
-                sshagent(credentials: [env.ssh-credentials-id]) {
+                sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.ANSIBLE_USER}@${env.ANSIBLE_SERVER} 'rm -f /home/ubuntu/webapp.war'
                         scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/${env.JOB_NAME}/webapp/target/webapp.war ${env.ANSIBLE_USER}@${env.ANSIBLE_SERVER}:/home/ubuntu/
@@ -76,4 +76,3 @@ pipeline {
         }
     }
 }
-
